@@ -14,7 +14,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import de.ellpeck.actuallyadditions.api.booklet.IBookletPage;
 import de.ellpeck.actuallyadditions.mod.ActuallyAdditions;
 import de.ellpeck.actuallyadditions.mod.blocks.IHudDisplay;
+import de.ellpeck.actuallyadditions.mod.booklet.InitBooklet;
+import de.ellpeck.actuallyadditions.mod.booklet.gui.GuiBooklet;
+import de.ellpeck.actuallyadditions.mod.booklet.gui.GuiMainPage;
+import de.ellpeck.actuallyadditions.mod.booklet.misc.BookletUtils;
+import de.ellpeck.actuallyadditions.mod.data.PlayerData;
 import de.ellpeck.actuallyadditions.mod.items.base.ItemBase;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -46,24 +53,39 @@ public class ItemBooklet extends ItemBase implements IHudDisplay {
 
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-//        if (context.getPlayer().isShiftKeyDown()) {
-//            BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-//            Block block = state.getBlock();
-//            ItemStack blockStack = new ItemStack(block);
-//            IBookletPage page = BookletUtils.findFirstPageForStack(blockStack);
-//            if (page != null) {
-//                if (context.getLevel().isClientSide) {
-//                    forcedPage = page;
-//                }
-//                this.use(context.getLevel(), context.getPlayer(), context.getHand());
-//                return ActionResultType.SUCCESS;
-//            }
-//        }
+        if (context.getPlayer().isShiftKeyDown()) {
+            BlockState state = context.getLevel().getBlockState(context.getClickedPos());
+            Block block = state.getBlock();
+            ItemStack blockStack = new ItemStack(block);
+            IBookletPage page = BookletUtils.findFirstPageForStack(blockStack);
+            if (page != null) {
+                if (context.getLevel().isClientSide) {
+                    forcedPage = page;
+                }
+                this.use(context.getLevel(), context.getPlayer(), context.getHand());
+                return ActionResultType.SUCCESS;
+            }
+        }
         return ActionResultType.FAIL;
     }
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if(world.isClientSide) {
+            InitBooklet.init();
+            if (ItemBooklet.forcedPage != null) {
+                GuiBooklet gui = BookletUtils.createBookletGuiFromPage(null, ItemBooklet.forcedPage);
+                ItemBooklet.forcedPage = null;
+                Minecraft.getInstance().setScreen(gui);
+            } else {
+                PlayerData.PlayerSave data = PlayerData.getDataFromPlayer(player);
+                if (data.lastOpenBooklet != null) {
+                    Minecraft.getInstance().setScreen(data.lastOpenBooklet);
+                } else {
+                    Minecraft.getInstance().setScreen(new GuiMainPage(null));
+                }
+            }
+        }
 //        player.openGui(ActuallyAdditions.INSTANCE, GuiHandler.GuiTypes.BOOK.ordinal(), world, (int) player.posX, (int) player.posY, (int) player.posZ);
 //
 //        if (!world.isClientSide) {

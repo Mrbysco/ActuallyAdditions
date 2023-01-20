@@ -11,11 +11,15 @@
 package de.ellpeck.actuallyadditions.mod.data;
 
 import de.ellpeck.actuallyadditions.api.booklet.IBookletPage;
+import de.ellpeck.actuallyadditions.mod.booklet.gui.GuiBooklet;
+import de.ellpeck.actuallyadditions.mod.booklet.misc.BookletUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +29,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PlayerData {
 
     public static PlayerSave getDataFromPlayer(PlayerEntity player) {
-        WorldData worldData = WorldData.get((ServerWorld) player.getCommandSenderWorld());
-        ConcurrentHashMap<UUID, PlayerSave> data = worldData.playerSaveData;
         UUID id = player.getUUID();
+        if(!player.getCommandSenderWorld().isClientSide) {
+            WorldData worldData = WorldData.get((ServerWorld) player.getCommandSenderWorld());
+            ConcurrentHashMap<UUID, PlayerSave> data = worldData.playerSaveData;
 
-        if (data.containsKey(id)) {
-            PlayerSave save = data.get(id);
-            if (save != null && save.id != null && save.id.equals(id)) {
-                return save;
+            if (data.containsKey(id)) {
+                PlayerSave save = data.get(id);
+                if (save != null && save.id != null && save.id.equals(id)) {
+                    return save;
+                }
             }
-        }
 
-        //Add Data if none is existant
-        PlayerSave save = new PlayerSave(id);
-        data.put(id, save);
-        worldData.setDirty();
-        return save;
+            //Add Data if none is existant
+            PlayerSave save = new PlayerSave(id);
+            data.put(id, save);
+            worldData.setDirty();
+            return save;
+        } else {
+            //Todo: Client stuff
+            return new PlayerSave(id);
+        }
     }
 
     public static class PlayerSave {
@@ -56,8 +65,8 @@ public final class PlayerData {
         public IBookletPage[] bookmarks = new IBookletPage[12];
         public List<String> completedTrials = new ArrayList<>();
 
-//        @OnlyIn(Dist.CLIENT)
-//        public GuiBooklet lastOpenBooklet;
+        @OnlyIn(Dist.CLIENT)
+        public GuiBooklet lastOpenBooklet;
 
         public PlayerSave(UUID id) {
             this.id = id;
@@ -110,7 +119,7 @@ public final class PlayerData {
             for (int i = 0; i < bookmarks.size(); i++) {
                 String strg = bookmarks.getString(i);
                 if (!strg.isEmpty()) {
-//                    IBookletPage page = BookletUtils.getBookletPageById(strg);
+                    IBookletPage page = BookletUtils.getBookletPageById(strg);
                     this.bookmarks[i] = null; // page;
                 } else {
                     this.bookmarks[i] = null;

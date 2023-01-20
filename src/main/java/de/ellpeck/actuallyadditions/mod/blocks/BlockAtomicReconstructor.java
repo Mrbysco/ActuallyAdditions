@@ -125,7 +125,7 @@ public class BlockAtomicReconstructor extends FullyDirectionalBlock.Container im
             } else {
                 lens_name = slot.getItem().getName(slot);
 
-                AssetUtil.renderStackToGui(slot, resolution.getGuiScaledWidth() / 2 + 15, resolution.getGuiScaledHeight() / 2 - 19, 1F);
+                AssetUtil.renderStackToGui(matrices, slot, resolution.getGuiScaledWidth() / 2 + 15, resolution.getGuiScaledHeight() / 2 - 19, 1F);
             }
             minecraft.font.drawShadow(matrices, lens_name.plainCopy().withStyle(TextFormatting.YELLOW).withStyle(TextFormatting.ITALIC).getString(), resolution.getGuiScaledWidth() / 2.0f + 35, resolution.getGuiScaledHeight() / 2.0f - 15, 0xFFFFFF);
         }

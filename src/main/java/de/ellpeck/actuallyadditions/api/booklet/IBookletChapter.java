@@ -11,6 +11,7 @@
 package de.ellpeck.actuallyadditions.api.booklet;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,7 +23,7 @@ public interface IBookletChapter {
     String getLocalizedName();
 
     @OnlyIn(Dist.CLIENT)
-    String getLocalizedNameWithFormatting();
+    ITextComponent getLocalizedNameWithFormatting();
 
     IBookletEntry getEntry();
 

@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -126,25 +127,27 @@ public final class AssetUtil {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void renderStackToGui(ItemStack stack, int x, int y, float scale) {
-/*        GlStateManager._pushMatrix();
-        GlStateManager._enableBlend();
-        GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.enableDepth();
-        GlStateManager._enableRescaleNormal();
-        GlStateManager.translate(x, y, 0);
-        GlStateManager.scale(scale, scale, scale);
+    public static void renderStackToGui(MatrixStack matrices, ItemStack stack, double x, double y, float scale) {
+        matrices.pushPose();
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderHelper.turnBackOn();
+//        GlStateManager.enableDepth();
+//        RenderHelper._enableRescaleNormal();
+        GlStateManager._translated(x, y, 0);
+        GlStateManager._scalef(scale, scale, scale);
 
         Minecraft mc = Minecraft.getInstance();
-        boolean flagBefore = mc.font.getUnicodeFlag();
-        mc.font.setUnicodeFlag(false);
-        Minecraft.getInstance().getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
-        Minecraft.getInstance().getRenderItem().renderItemOverlayIntoGUI(mc.font, stack, 0, 0, null);
-        mc.font.setUnicodeFlag(flagBefore);
+//        boolean flagBefore = mc.font.getUnicodeFlag();
+//        mc.font.setUnicodeFlag(false);
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, 0, 0);
+        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(mc.font, stack, 0, 0, null);
+//        mc.font.setUnicodeFlag(flagBefore);
 
         RenderHelper.turnOff();
-        GlStateManager._popMatrix();*/
+        RenderSystem.popMatrix();
+        matrices.popPose();
     }
 
     //Copied from Gui.class and changed

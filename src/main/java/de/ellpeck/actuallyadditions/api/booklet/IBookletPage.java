@@ -33,13 +33,13 @@ public interface IBookletPage {
     String getInfoText();
 
     @OnlyIn(Dist.CLIENT)
-    void mouseClicked(GuiBookletBase gui, int mouseX, int mouseY, int mouseButton);
+    boolean mouseClicked(GuiBookletBase gui, double mouseX, double mouseY, int mouseButton);
 
     @OnlyIn(Dist.CLIENT)
-    void mouseReleased(GuiBookletBase gui, int mouseX, int mouseY, int state);
+    boolean mouseReleased(GuiBookletBase gui, double mouseX, double mouseY, int state);
 
     @OnlyIn(Dist.CLIENT)
-    void mouseClickMove(GuiBookletBase gui, int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick);
+    boolean mouseDragged(GuiBookletBase gui, double mouseX, double mouseY, int clickedMouseButton, double dragX, double dragY);
 
     @OnlyIn(Dist.CLIENT)
     void actionPerformed(GuiBookletBase gui, Button button);
